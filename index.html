@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Experience</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- AR Start Button -->
+  <div id="overlay">
+    <button id="ar-button">Start AR</button>
+    <p id="status-text">Initializing...</p>
+  </div>
+
+  <!-- Tap Here Indicator (yeh AR mein dikhega) -->
+  <div id="tap-indicator" style="display:none;">
+    <img id="outline-img" src="textures/model-outline.png" alt="outline" />
+    <p>Tap Here</p>
+  </div>
+
+  <!-- Three.js & GLTFLoader CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
