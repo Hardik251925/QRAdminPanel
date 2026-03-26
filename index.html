@@ -1,35 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Experience</title>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Model Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#f8f8f6;--card:#fff;--border:#e5e5e0;--text:#1a1a1a;--muted:#888;--ac:#00b87a;--ac2:#6c5ce7;--danger:#e74c3c;--r:12px}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+        .top-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+        .top-bar h1{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
+        .top-bar h1 span{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
+        .top-actions{display:flex;gap:8px}
+
+        .container{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+
+        .btn{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+        .btn:hover{border-color:#ccc;background:#fafafa}.btn:active{transform:scale(0.97)}
+        .btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}.btn-primary:hover{background:#00a06a}
+        .btn-danger{color:var(--danger);border-color:rgba(231,76,60,0.3)}.btn-danger:hover{background:rgba(231,76,60,0.05)}
+        .btn-purple{background:var(--ac2);color:#fff;border-color:var(--ac2)}.btn-purple:hover{background:#5a4bd6}
+        .btn-sm{padding:6px 12px;font-size:12px}
+        .btn-submit{padding:12px 32px;font-size:15px;font-weight:600;border-radius:10px}
+
+        .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+        .card h2{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+        .card h3{font-size:12px;font-weight:600;margin:14px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+        label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+        input[type="text"],input[type="url"],input[type="password"],textarea,select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:#fff;transition:border-color .2s}
+        input:focus,textarea:focus{outline:none;border-color:var(--ac)}
+        textarea{resize:vertical;min-height:70px}
+        .form-row{margin-bottom:12px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+        .file-hint{font-size:11px;color:var(--muted);margin-top:3px}
+
+        .model-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+        .model-list-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+        .model-list-item:hover{border-color:var(--ac);background:rgba(0,184,122,0.03)}
+        .model-list-item.active{border-color:var(--ac);background:rgba(0,184,122,0.06);box-shadow:0 0 0 1px var(--ac)}
+        .ml-emoji{font-size:22px;width:36px;height:36px;border-radius:8px;background:#f5f5f0;display:grid;place-items:center}
+        .ml-info{flex:1}.ml-name{font-size:13px;font-weight:600}.ml-id{font-size:11px;color:var(--muted)}
+        .ml-delete{width:26px;height:26px;border-radius:6px;border:1px solid rgba(231,76,60,0.2);background:none;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:12px;opacity:0;transition:opacity .2s}
+        .model-list-item:hover .ml-delete{opacity:1}
+
+        .dyn-item{padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;position:relative}
+        .dyn-remove{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;border:1px solid rgba(231,76,60,0.2);background:#fff;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:11px}
+
+        /* GitHub config */
+        .gh-config{background:#f0faf5;border:1px solid rgba(0,184,122,0.2);border-radius:var(--r);padding:16px;margin-bottom:16px}
+        .gh-config h2{font-size:14px;font-weight:600;color:var(--ac);margin-bottom:12px}
+        .gh-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+        .gh-status.ok{background:rgba(0,184,122,0.1);color:var(--ac)}
+        .gh-status.err{background:rgba(231,76,60,0.1);color:var(--danger)}
+
+        /* Submit section */
+        .submit-section{background:#fff;border:2px solid var(--ac);border-radius:var(--r);padding:20px;margin:20px 0;text-align:center}
+        .submit-section p{font-size:13px;color:var(--muted);margin-bottom:14px}
+        .submit-log{margin-top:12px;padding:10px;background:#f5f5f0;border-radius:8px;font-size:12px;color:var(--muted);text-align:left;max-height:150px;overflow:auto;display:none;font-family:monospace;line-height:1.6}
+
+        .toast{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;z-index:999;transform:translateY(-20px);opacity:0;transition:all .3s;pointer-events:none}
+        .toast.show{transform:translateY(0);opacity:1}
+
+        .status-bar{position:fixed;bottom:0;left:0;right:0;padding:10px 20px;background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:50;font-size:12px;color:var(--muted)}
+
+        @media(max-width:600px){.form-grid,.form-grid-3{grid-template-columns:1fr}}
+    </style>
 </head>
 <body>
 
-  <!-- AR Start Button -->
-  <div id="overlay">
-    <button id="ar-button">Start AR</button>
-    <p id="status-text">Initializing...</p>
-  </div>
+<div class="top-bar">
+    <h1><span>AR</span> Admin Panel</h1>
+    <div class="top-actions">
+        <button class="btn btn-sm" onclick="loadFromGitHub()">Pull from GitHub</button>
+        <button class="btn btn-sm btn-primary" onclick="submitToGitHub()">Submit to GitHub</button>
+    </div>
+</div>
 
-  <!-- Tap Here Indicator (yeh AR mein dikhega) -->
-  <div id="tap-indicator" style="display:none;">
-    <img id="outline-img" src="textures/model-outline.png" alt="outline" />
-    <p>Tap Here</p>
-  </div>
+<div class="container">
 
-  <!-- Three.js & GLTFLoader CDN -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    <!-- ═══ GITHUB CONFIG ═══ -->
+    <div class="gh-config">
+        <h2>GitHub Configuration</h2>
+        <div class="form-grid">
+            <div class="form-row">
+                <label>GitHub Username</label>
+                <input type="text" id="gh_user" value="Hardik251925" oninput="saveGHConfig()">
+            </div>
+            <div class="form-row">
+                <label>Repository Name</label>
+                <input type="text" id="gh_repo" value="QRWEbAPP" oninput="saveGHConfig()">
+            </div>
+        </div>
+        <div class="form-row">
+            <label>Personal Access Token (GitHub Settings → Developer settings → Tokens → Generate)</label>
+            <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveGHConfig()">
+            <div class="file-hint">Token banane ka link: github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → "repo" permission select karo</div>
+        </div>
+        <div class="form-row">
+            <label>JSON File Path in Repo</label>
+            <input type="text" id="gh_path" value="assets/data/models.json" oninput="saveGHConfig()">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+            <span class="gh-status" id="ghStatus">Configure token to enable submit</span>
+        </div>
+    </div>
+
+    <!-- ═══ MODEL LIST ═══ -->
+    <div class="card">
+        <h2>Models <button class="btn btn-sm btn-primary" onclick="addModel()">+ Add Model</button></h2>
+        <div class="model-list" id="modelList"></div>
+    </div>
+
+    <!-- ═══ EDITOR ═══ -->
+    <div id="editorSection" style="display:none">
+        <div class="card">
+            <h2>Basic Information</h2>
+            <div class="form-grid">
+                <div class="form-row"><label>Model ID (QR code mein ?heart)</label><input type="text" id="f_id" placeholder="heart" oninput="autoSave()"></div>
+                <div class="form-row"><label>Display Name</label><input type="text" id="f_name" placeholder="Human Heart" oninput="autoSave()"></div>
+            </div>
+            <div class="form-grid-3">
+                <div class="form-row"><label>Category</label><input type="text" id="f_category" placeholder="Cardiology" oninput="autoSave()"></div>
+                <div class="form-row"><label>Emoji</label><input type="text" id="f_emoji" placeholder="❤️" oninput="autoSave()"></div>
+                <div class="form-row"><label>Camera Orbit</label><input type="text" id="f_cameraOrbit" placeholder="30deg 75deg 2.5m" oninput="autoSave()"></div>
+            </div>
+            <div class="form-row"><label>Description</label><textarea id="f_description" placeholder="Description..." oninput="autoSave()"></textarea></div>
+            <div class="form-row"><label>Tags (comma separated)</label><input type="text" id="f_tags" placeholder="Anatomy, Cardiology" oninput="autoSave()"></div>
+        </div>
+
+        <div class="card">
+            <h2>3D Model Files</h2>
+            <div class="form-grid">
+                <div class="form-row"><label>GLB File Path (Android)</label><input type="text" id="f_glb" placeholder="assets/models/heart.glb" oninput="autoSave()"><div class="file-hint">.glb file for Android + 3D preview</div></div>
+                <div class="form-row"><label>USDZ File Path (iOS)</label><input type="text" id="f_usdz" placeholder="assets/models/heart.usdz" oninput="autoSave()"><div class="file-hint">.usdz file for iPhone AR Quick Look</div></div>
+            </div>
+        </div>
+
+        <div class="card"><h2>Hotspots <button class="btn btn-sm" onclick="addHotspot()">+ Add</button></h2><div id="hotspotList"></div></div>
+        <div class="card"><h2>Videos <button class="btn btn-sm" onclick="addVideo()">+ Add</button></h2><div id="videoList"></div></div>
+        <div class="card"><h2>Images <button class="btn btn-sm" onclick="addImage()">+ Add</button></h2><div id="imageList"></div></div>
+        <div class="card"><h2>Information Sections <button class="btn btn-sm" onclick="addInfoSection()">+ Add</button></h2><div id="infoList"></div></div>
+    </div>
+
+    <!-- ═══ SUBMIT ═══ -->
+    <div class="submit-section">
+        <p>Submit karoge toh models.json directly GitHub repo mein update ho jayega.<br>AR Viewer automatically naya data fetch karega.</p>
+        <button class="btn btn-primary btn-submit" onclick="submitToGitHub()" id="submitBtn">Submit to GitHub</button>
+        <div class="submit-log" id="submitLog"></div>
+    </div>
+
+</div>
+
+<div class="status-bar">
+    <div id="statusText">Ready</div>
+    <div><button class="btn btn-sm btn-danger" onclick="clearAll()">Clear All</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let models = [];
+let activeModel = -1;
+let fileSHA = '';  // GitHub needs SHA of existing file to update
+
+// Load saved GitHub config from localStorage
+function loadGHConfig() {
+    document.getElementById('gh_user').value = localStorage.getItem('gh_user') || 'Hardik251925';
+    document.getElementById('gh_repo').value = localStorage.getItem('gh_repo') || 'QRWEbAPP';
+    document.getElementById('gh_token').value = localStorage.getItem('gh_token') || '';
+    document.getElementById('gh_path').value = localStorage.getItem('gh_path') || 'assets/data/models.json';
+    updateGHStatus();
+}
+function saveGHConfig() {
+    localStorage.setItem('gh_user', document.getElementById('gh_user').value.trim());
+    localStorage.setItem('gh_repo', document.getElementById('gh_repo').value.trim());
+    localStorage.setItem('gh_token', document.getElementById('gh_token').value.trim());
+    localStorage.setItem('gh_path', document.getElementById('gh_path').value.trim());
+    updateGHStatus();
+}
+function updateGHStatus() {
+    const s = document.getElementById('ghStatus');
+    const token = document.getElementById('gh_token').value.trim();
+    if (token) { s.className = 'gh-status ok'; s.textContent = 'Token set — Ready to submit'; }
+    else { s.className = 'gh-status err'; s.textContent = 'Token missing — Submit disabled'; }
+}
+
+// ══════════════════════════════════════════════
+// GITHUB API — PULL (GET existing data)
+// ══════════════════════════════════════════════
+async function loadFromGitHub() {
+    const user = document.getElementById('gh_user').value.trim();
+    const repo = document.getElementById('gh_repo').value.trim();
+    const path = document.getElementById('gh_path').value.trim();
+    const token = document.getElementById('gh_token').value.trim();
+
+    logMsg('Fetching from GitHub...');
+    try {
+        const headers = { 'Accept': 'application/vnd.github.v3+json' };
+        if (token) headers['Authorization'] = 'token ' + token;
+
+        const r = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, { headers });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+
+        fileSHA = data.sha;
+        const content = atob(data.content.replace(/\n/g, ''));
+        const json = JSON.parse(content);
+
+        if (json.models && Array.isArray(json.models)) models = json.models;
+        else if (Array.isArray(json)) models = json;
+        else throw new Error('Invalid JSON format');
+
+        activeModel = models.length > 0 ? 0 : -1;
+        renderModelList();
+        if (activeModel >= 0) loadEditor();
+        logMsg('Loaded ' + models.length + ' model(s) from GitHub. SHA: ' + fileSHA.substring(0, 7));
+        toast('Pulled ' + models.length + ' model(s) from GitHub');
+    } catch (e) {
+        logMsg('ERROR: ' + e.message);
+        toast('Pull failed: ' + e.message);
     }
-  }
-  </script>
+}
 
-  <script type="module" src="js/app.js"></script>
+// ══════════════════════════════════════════════
+// GITHUB API — PUSH (Submit/Update JSON)
+// ══════════════════════════════════════════════
+async function submitToGitHub() {
+    const user = document.getElementById('gh_user').value.trim();
+    const repo = document.getElementById('gh_repo').value.trim();
+    const path = document.getElementById('gh_path').value.trim();
+    const token = document.getElementById('gh_token').value.trim();
+
+    if (!token) { toast('GitHub Token required! Config section mein dalo.'); return; }
+    if (models.length === 0) { toast('No models to submit!'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Submitting...';
+    btn.disabled = true;
+
+    try {
+        // Step 1: Get current file SHA (needed for update)
+        logMsg('Step 1: Getting current file SHA...');
+        const headers = {
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': 'token ' + token
+        };
+
+        try {
+            const getR = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, { headers });
+            if (getR.ok) {
+                const getData = await getR.json();
+                fileSHA = getData.sha;
+                logMsg('File exists. SHA: ' + fileSHA.substring(0, 7));
+            } else {
+                fileSHA = '';
+                logMsg('File does not exist yet. Will create new.');
+            }
+        } catch (e) {
+            fileSHA = '';
+            logMsg('File not found. Creating new.');
+        }
+
+        // Step 2: Prepare content
+        const jsonContent = JSON.stringify({ models: models }, null, 4);
+        const base64Content = btoa(unescape(encodeURIComponent(jsonContent)));
+
+        // Step 3: PUT to GitHub API
+        logMsg('Step 2: Uploading to GitHub...');
+        const body = {
+            message: 'Update models.json from Admin Panel',
+            content: base64Content,
+            branch: 'main'
+        };
+        if (fileSHA) body.sha = fileSHA;
+
+        const putR = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
+            method: 'PUT',
+            headers: {
+                ...headers,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!putR.ok) {
+            const errData = await putR.json();
+            throw new Error(errData.message || 'HTTP ' + putR.status);
+        }
+
+        const result = await putR.json();
+        fileSHA = result.content.sha;
+        logMsg('SUCCESS! File updated on GitHub.');
+        logMsg('New SHA: ' + fileSHA.substring(0, 7));
+        logMsg('GitHub Pages will update in 1-2 minutes.');
+        logMsg('AR Viewer URL: https://' + user + '.github.io/' + repo + '/');
+        toast('Submitted to GitHub successfully!');
+
+    } catch (e) {
+        logMsg('ERROR: ' + e.message);
+        toast('Submit failed: ' + e.message);
+    }
+
+    btn.textContent = 'Submit to GitHub';
+    btn.disabled = false;
+}
+
+function logMsg(msg) {
+    const log = document.getElementById('submitLog');
+    log.style.display = 'block';
+    log.textContent += '[' + new Date().toLocaleTimeString() + '] ' + msg + '\n';
+    log.scrollTop = log.scrollHeight;
+}
+
+// ══════════════════════════════════════════════
+// MODEL CRUD
+// ══════════════════════════════════════════════
+function addModel() {
+    models.push({ id: 'model_' + Date.now().toString(36), name: 'New Model', category: '', emoji: '🔬', glb: '', usdz: '', cameraOrbit: '30deg 75deg 2.5m', description: '', tags: [], hotspots: [], videos: [], infoSections: [], images: [] });
+    activeModel = models.length - 1;
+    renderModelList(); loadEditor(); toast('Model added');
+}
+function selectModel(i) { activeModel = i; renderModelList(); loadEditor(); }
+function deleteModel(i, e) {
+    e.stopPropagation();
+    if (!confirm('Delete "' + models[i].name + '"?')) return;
+    models.splice(i, 1);
+    if (activeModel >= models.length) activeModel = models.length - 1;
+    renderModelList();
+    if (activeModel >= 0) loadEditor(); else document.getElementById('editorSection').style.display = 'none';
+    toast('Model deleted');
+}
+function renderModelList() {
+    document.getElementById('modelList').innerHTML = models.length === 0 ?
+        '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No models. Click "+ Add Model" to start.</div>' :
+        models.map((m, i) => `<div class="model-list-item ${i === activeModel ? 'active' : ''}" onclick="selectModel(${i})">
+            <div class="ml-emoji">${m.emoji || '🔬'}</div>
+            <div class="ml-info"><div class="ml-name">${m.name || 'Untitled'}</div><div class="ml-id">ID: ${m.id}${m.glb ? ' | GLB ✓' : ''}${m.usdz ? ' | USDZ ✓' : ''}</div></div>
+            <button class="ml-delete" onclick="deleteModel(${i},event)">✕</button></div>`).join('');
+    document.getElementById('statusText').textContent = models.length + ' model(s) | Editing: ' + (activeModel >= 0 ? (models[activeModel].name || 'Untitled') : 'None');
+}
+
+// ══════════════════════════════════════════════
+// EDITOR
+// ══════════════════════════════════════════════
+function loadEditor() {
+    if (activeModel < 0) return;
+    document.getElementById('editorSection').style.display = 'block';
+    const m = models[activeModel];
+    document.getElementById('f_id').value = m.id || '';
+    document.getElementById('f_name').value = m.name || '';
+    document.getElementById('f_category').value = m.category || '';
+    document.getElementById('f_emoji').value = m.emoji || '';
+    document.getElementById('f_cameraOrbit').value = m.cameraOrbit || '';
+    document.getElementById('f_description').value = m.description || '';
+    document.getElementById('f_tags').value = (m.tags || []).join(', ');
+    document.getElementById('f_glb').value = m.glb || '';
+    document.getElementById('f_usdz').value = m.usdz || '';
+    renderHotspots(); renderVideos(); renderImages(); renderInfoSections();
+}
+function autoSave() {
+    if (activeModel < 0) return;
+    const m = models[activeModel];
+    m.id = document.getElementById('f_id').value.trim();
+    m.name = document.getElementById('f_name').value.trim();
+    m.category = document.getElementById('f_category').value.trim();
+    m.emoji = document.getElementById('f_emoji').value.trim();
+    m.cameraOrbit = document.getElementById('f_cameraOrbit').value.trim();
+    m.description = document.getElementById('f_description').value.trim();
+    m.tags = document.getElementById('f_tags').value.split(',').map(t => t.trim()).filter(t => t);
+    m.glb = document.getElementById('f_glb').value.trim();
+    m.usdz = document.getElementById('f_usdz').value.trim();
+    renderModelList();
+}
+
+// ══════════════════════════════════════════════
+// DYNAMIC LISTS
+// ══════════════════════════════════════════════
+function addHotspot(){if(activeModel<0)return;models[activeModel].hotspots.push({position:'0 0 0',normal:'0 1 0',label:'',info:''});renderHotspots()}
+function removeHotspot(i){models[activeModel].hotspots.splice(i,1);renderHotspots()}
+function saveHotspot(i){const h=models[activeModel].hotspots[i];h.label=document.getElementById('hs_l_'+i).value.trim();h.info=document.getElementById('hs_i_'+i).value.trim();h.position=document.getElementById('hs_p_'+i).value.trim();h.normal=document.getElementById('hs_n_'+i).value.trim()}
+function renderHotspots(){if(activeModel<0)return;const l=models[activeModel].hotspots||[];document.getElementById('hotspotList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No hotspots.</div>':l.map((h,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeHotspot(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Label</label><input type="text" id="hs_l_${i}" value="${h.label||''}" oninput="saveHotspot(${i})"></div><div class="form-row"><label>Position (x y z)</label><input type="text" id="hs_p_${i}" value="${h.position||''}" oninput="saveHotspot(${i})"></div></div><div class="form-grid"><div class="form-row"><label>Normal (x y z)</label><input type="text" id="hs_n_${i}" value="${h.normal||''}" oninput="saveHotspot(${i})"></div><div class="form-row"><label>Info Text</label><input type="text" id="hs_i_${i}" value="${h.info||''}" oninput="saveHotspot(${i})"></div></div></div>`).join('')}
+
+function addVideo(){if(activeModel<0)return;models[activeModel].videos.push({title:'',duration:'',emoji:'🎬',url:''});renderVideos()}
+function removeVideo(i){models[activeModel].videos.splice(i,1);renderVideos()}
+function saveVideo(i){const v=models[activeModel].videos[i];v.title=document.getElementById('vd_t_'+i).value.trim();v.duration=document.getElementById('vd_d_'+i).value.trim();v.emoji=document.getElementById('vd_e_'+i).value.trim();v.url=document.getElementById('vd_u_'+i).value.trim()}
+function renderVideos(){if(activeModel<0)return;const l=models[activeModel].videos||[];document.getElementById('videoList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No videos.</div>':l.map((v,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeVideo(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Title</label><input type="text" id="vd_t_${i}" value="${v.title||''}" oninput="saveVideo(${i})"></div><div class="form-row"><label>URL</label><input type="url" id="vd_u_${i}" value="${v.url||''}" oninput="saveVideo(${i})"></div></div><div class="form-grid"><div class="form-row"><label>Duration</label><input type="text" id="vd_d_${i}" value="${v.duration||''}" oninput="saveVideo(${i})"></div><div class="form-row"><label>Emoji</label><input type="text" id="vd_e_${i}" value="${v.emoji||''}" oninput="saveVideo(${i})"></div></div></div>`).join('')}
+
+function addImage(){if(activeModel<0)return;models[activeModel].images.push({src:'',label:''});renderImages()}
+function removeImage(i){models[activeModel].images.splice(i,1);renderImages()}
+function saveImage(i){const img=models[activeModel].images[i];img.src=document.getElementById('im_s_'+i).value.trim();img.label=document.getElementById('im_l_'+i).value.trim()}
+function renderImages(){if(activeModel<0)return;const l=models[activeModel].images||[];document.getElementById('imageList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No images.</div>':l.map((img,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeImage(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Image Path</label><input type="text" id="im_s_${i}" value="${img.src||''}" oninput="saveImage(${i})" placeholder="assets/images/heart.jpg"></div><div class="form-row"><label>Label</label><input type="text" id="im_l_${i}" value="${img.label||''}" oninput="saveImage(${i})"></div></div></div>`).join('')}
+
+function addInfoSection(){if(activeModel<0)return;models[activeModel].infoSections.push({title:'',text:''});renderInfoSections()}
+function removeInfoSection(i){models[activeModel].infoSections.splice(i,1);renderInfoSections()}
+function saveInfoSection(i){const s=models[activeModel].infoSections[i];s.title=document.getElementById('in_t_'+i).value.trim();s.text=document.getElementById('in_x_'+i).value.trim()}
+function renderInfoSections(){if(activeModel<0)return;const l=models[activeModel].infoSections||[];document.getElementById('infoList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No sections.</div>':l.map((s,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeInfoSection(${i})">✕</button><div class="form-row"><label>Title</label><input type="text" id="in_t_${i}" value="${s.title||''}" oninput="saveInfoSection(${i})"></div><div class="form-row"><label>Text</label><textarea id="in_x_${i}" oninput="saveInfoSection(${i})">${s.text||''}</textarea></div></div>`).join('')}
+
+function clearAll(){if(!confirm('Delete all models?'))return;models=[];activeModel=-1;renderModelList();document.getElementById('editorSection').style.display='none';toast('All cleared')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+// INIT
+loadGHConfig();
+renderModelList();
+</script>
 </body>
 </html>
