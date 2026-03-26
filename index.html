@@ -89,15 +89,15 @@
     <div class="gh-box">
         <h2>GitHub Configuration</h2>
         <div class="form-grid">
-            <div class="form-row"><label>GitHub Username</label><input type="text" id="gh_user" value="Hardik251925" oninput="saveGH()"></div>
-            <div class="form-row"><label>AR Viewer Repository</label><input type="text" id="gh_repo" value="QRWEbAPP" oninput="saveGH()"></div>
+            <div class="form-row"><label>GitHub Username</label><input type="text" id="gh_user" value="Hardik251925" readonly></div>
+            <div class="form-row"><label>AR Viewer Repository</label><input type="text" id="gh_repo" value="QRWEbAPP" readonly></div>
         </div>
         <div class="form-row">
             <label>Personal Access Token <span class="req">*</span></label>
             <input type="password" id="gh_token" placeholder="Paste your token here — stored in browser only, never uploaded" oninput="saveGH()">
             <div class="hint">Saved securely in your browser localStorage. Not visible to anyone. Not uploaded anywhere.</div>
         </div>
-        <div class="form-row"><label>JSON Path in Repo</label><input type="text" id="gh_path" value="assets/data/models.json" oninput="saveGH()"></div>
+        <div class="form-row"><label>JSON Path in Repo</label><input type="text" id="gh_path" value="assets/data/models.json" readonly></div>
         <span class="gh-st no" id="ghSt">Token required</span>
     </div>
 
@@ -198,8 +198,8 @@ const QR_BASE='https://hardik251925.github.io/QRWEbAPP?';
 const MAX_VID=1, MAX_AUD=1, MAX_IMG=2;
 let M=[],AI=-1,SHA='',PF={};
 
-function loadGH(){['gh_user','gh_repo','gh_token','gh_path'].forEach(k=>{const v=localStorage.getItem(k);if(v)document.getElementById(k).value=v});uGHS()}
-function saveGH(){['gh_user','gh_repo','gh_token','gh_path'].forEach(k=>localStorage.setItem(k,document.getElementById(k).value.trim()));uGHS()}
+function loadGH(){const t=localStorage.getItem('gh_token');if(t)document.getElementById('gh_token').value=t;uGHS()}
+function saveGH(){localStorage.setItem('gh_token',document.getElementById('gh_token').value.trim());uGHS()}
 function uGHS(){const t=document.getElementById('gh_token').value.trim();const s=document.getElementById('ghSt');s.className='gh-st '+(t?'ok':'no');s.textContent=t?'Token set — Ready':'Token missing'}
 function ghH(){const h={'Accept':'application/vnd.github.v3+json'};const t=document.getElementById('gh_token').value.trim();if(t)h['Authorization']='token '+t;return h}
 function ghB(){return'https://api.github.com/repos/'+document.getElementById('gh_user').value.trim()+'/'+document.getElementById('gh_repo').value.trim()}
