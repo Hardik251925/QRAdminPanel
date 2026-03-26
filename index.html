@@ -162,24 +162,24 @@
         </div>
 
         <div class="card"><h2>Information Sections <button class="btn btn-sm" onclick="addInfo()">+ Add Section</button></h2><div id="infoList"></div></div>
+    </div>
 
-        <div class="card">
-            <h2>QR Code</h2>
-            <div class="form-row">
-                <label>QR Code URL (auto-generated from Model ID)</label>
-                <input type="text" id="f_qrurl" readonly style="font-family:monospace;color:var(--ac2)">
+    <!-- QR Code — OUTSIDE editor so it stays after reset -->
+    <div class="card" id="qrCard" style="display:none">
+        <h2>QR Code</h2>
+        <div class="form-row">
+            <label>QR Code URL (auto-generated from Model ID)</label>
+            <input type="text" id="f_qrurl" readonly style="font-family:monospace;color:var(--ac2)">
+        </div>
+        <div class="qr-section" id="qrSection" style="display:none">
+            <div class="qr-canvas" id="qrCanvas"></div>
+            <div class="share-btns">
+                <button class="share-btn wa" onclick="shareQR('whatsapp')">WhatsApp</button>
+                <button class="share-btn tw" onclick="shareQR('twitter')">Twitter / X</button>
+                <button class="share-btn fb" onclick="shareQR('facebook')">Facebook</button>
+                <button class="share-btn cp" onclick="shareQR('copy')">Copy Link</button>
+                <button class="share-btn dl" onclick="shareQR('download')">Download QR</button>
             </div>
-            <div class="qr-section" id="qrSection" style="display:none">
-                <div class="qr-canvas" id="qrCanvas"></div>
-                <div class="share-btns">
-                    <button class="share-btn wa" onclick="shareQR('whatsapp')">WhatsApp</button>
-                    <button class="share-btn tw" onclick="shareQR('twitter')">Twitter / X</button>
-                    <button class="share-btn fb" onclick="shareQR('facebook')">Facebook</button>
-                    <button class="share-btn cp" onclick="shareQR('copy')">Copy Link</button>
-                    <button class="share-btn dl" onclick="shareQR('download')">Download QR</button>
-                </div>
-            </div>
-            <div class="hint" style="margin-top:8px;text-align:center">QR code will appear after successful submit</div>
         </div>
     </div>
 
@@ -196,7 +196,7 @@
 <script>
 const QR_BASE='https://hardik251925.github.io/QRWEbAPP?';
 const MAX_VID=1, MAX_AUD=1, MAX_IMG=2;
-let M=[],AI=-1,SHA='',PF={};
+let M=[],AI=-1,SHA='',PF={},lastSubmittedId='';
 
 function loadGH(){const t=localStorage.getItem('gh_token');if(t)document.getElementById('gh_token').value=t;uGHS()}
 function saveGH(){localStorage.setItem('gh_token',document.getElementById('gh_token').value.trim());uGHS()}
@@ -247,8 +247,8 @@ slog('Form cleared. Ready for next model.');
 
 function slog(m){const l=document.getElementById('slog');l.style.display='block';l.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';l.scrollTop=l.scrollHeight}
 
-function genQR(id){const url=QR_BASE+id;document.getElementById('f_qrurl').value=url;const sec=document.getElementById('qrSection');sec.style.display='block';const c=document.getElementById('qrCanvas');c.innerHTML='';try{new QRCode(c,{text:url,width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})}catch(e){slog('QR Error: '+e.message);c.innerHTML='<p style="color:var(--danger);font-size:12px">QR generation failed: '+e.message+'</p>'}}
-function shareQR(type){const id=M[AI]?M[AI].id:'';const url=QR_BASE+id;const text='Check out this AR Model: '+url;if(type==='whatsapp')window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');else if(type==='twitter')window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');else if(type==='facebook')window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank');else if(type==='copy'){navigator.clipboard.writeText(url).then(()=>TT('Link copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);TT('Link copied!')})}else if(type==='download'){const cvs=document.querySelector('#qrCanvas canvas')||document.querySelector('#qrCanvas img');if(cvs){const a=document.createElement('a');a.download='qr-'+id+'.png';if(cvs.tagName==='CANVAS')a.href=cvs.toDataURL();else a.href=cvs.src;a.click();TT('QR downloaded')}}}
+function genQR(id){lastSubmittedId=id;const url=QR_BASE+id;document.getElementById('f_qrurl').value=url;document.getElementById('qrCard').style.display='block';const sec=document.getElementById('qrSection');sec.style.display='block';const c=document.getElementById('qrCanvas');c.innerHTML='';try{new QRCode(c,{text:url,width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})}catch(e){slog('QR Error: '+e.message);c.innerHTML='<p style="color:var(--danger);font-size:12px">QR generation failed: '+e.message+'</p>'}}
+function shareQR(type){const id=lastSubmittedId;const url=QR_BASE+id;const text='Check out this AR Model: '+url;if(type==='whatsapp')window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');else if(type==='twitter')window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');else if(type==='facebook')window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank');else if(type==='copy'){navigator.clipboard.writeText(url).then(()=>TT('Link copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);TT('Link copied!')})}else if(type==='download'){const cvs=document.querySelector('#qrCanvas canvas')||document.querySelector('#qrCanvas img');if(cvs){const a=document.createElement('a');a.download='qr-'+id+'.png';if(cvs.tagName==='CANVAS')a.href=cvs.toDataURL();else a.href=cvs.src;a.click();TT('QR downloaded')}}}
 
 function addModel(){M.push({id:'',name:'',category:'',emoji:'🔬',glb:'',usdz:'',cameraOrbit:'30deg 75deg 2.5m',description:'',tags:[],videos:[],audio:[],infoSections:[],images:[]});AI=M.length-1;renderML();loadEd();TT('Model added — fill required fields')}
 function selM(i){AI=i;renderML();loadEd()}
@@ -257,7 +257,7 @@ function renderML(){document.getElementById('mList').innerHTML=M.length===0?'<di
 
 function loadEd(){if(AI<0)return;document.getElementById('editor').style.display='block';const m=M[AI];document.getElementById('f_id').value=m.id||'';document.getElementById('f_name').value=m.name||'';document.getElementById('f_cat').value=m.category||'';document.getElementById('f_emo').value=m.emoji||'';document.getElementById('f_cam').value=m.cameraOrbit||'';document.getElementById('f_desc').value=m.description||'';document.getElementById('f_tags').value=(m.tags||[]).join(', ');document.getElementById('f_glb').value=m.glb||'';document.getElementById('f_usdz').value=m.usdz||'';
 const gf=PF[AI+'_glb'];document.getElementById('glbInfo').innerHTML=gf?'<span class="ok">'+gf.name+'</span> <span class="fsize">('+fmtS(gf.size)+')</span>':'No file selected';const uf=PF[AI+'_usdz'];document.getElementById('usdzInfo').innerHTML=uf?'<span class="ok">'+uf.name+'</span> <span class="fsize">('+fmtS(uf.size)+')</span>':'No file selected';
-document.getElementById('f_qrurl').value=m.id?QR_BASE+m.id:'Enter Model ID first';document.getElementById('qrSection').style.display='none';
+document.getElementById('f_qrurl').value=m.id?QR_BASE+m.id:'Enter Model ID first';
 renderVid();renderAud();renderImg();renderInf();showVE([])}
 
 function autoSave(){if(AI<0)return;const m=M[AI];let id=document.getElementById('f_id').value.toLowerCase().replace(/[^a-z]/g,'');document.getElementById('f_id').value=id;m.id=id;m.name=document.getElementById('f_name').value.trim();m.category=document.getElementById('f_cat').value.trim();m.emoji=document.getElementById('f_emo').value.trim();m.cameraOrbit=document.getElementById('f_cam').value.trim();m.description=document.getElementById('f_desc').value.trim();m.tags=document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(t=>t);
