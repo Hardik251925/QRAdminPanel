@@ -8,416 +8,412 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f8f8f6;--card:#fff;--border:#e5e5e0;--text:#1a1a1a;--muted:#888;--ac:#00b87a;--ac2:#6c5ce7;--danger:#e74c3c;--r:12px}
-        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+        body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:70px}
         .top-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
         .top-bar h1{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px}
-        .top-bar h1 span{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
-        .container{max-width:860px;margin:0 auto;padding:20px 16px 80px}
-        .btn{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-        .btn:hover{border-color:#ccc;background:#fafafa}.btn:active{transform:scale(0.97)}
-        .btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}.btn-primary:hover{background:#00a06a}
-        .btn-danger{color:var(--danger);border-color:rgba(231,76,60,0.3)}.btn-danger:hover{background:rgba(231,76,60,0.05)}
+        .top-bar h1 i{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700;font-style:normal}
+        .container{max-width:860px;margin:0 auto;padding:20px 16px 40px}
+        .btn{padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+        .btn:active{transform:scale(0.97)}
+        .btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+        .btn-danger{color:var(--danger);border-color:rgba(231,76,60,0.3)}
         .btn-sm{padding:6px 12px;font-size:12px}
-        .btn-submit{padding:12px 32px;font-size:15px;font-weight:600;border-radius:10px}
+        .btn-big{padding:14px 40px;font-size:16px;font-weight:600;border-radius:12px}
+        .btn[disabled]{opacity:0.4;pointer-events:none}
         .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
-        .card h2{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-        label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
-        input[type="text"],input[type="url"],input[type="password"],textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:#fff;transition:border-color .2s}
+        .card h2{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+        .req{color:var(--danger)}
+        label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+        input[type="text"],input[type="url"],input[type="password"],textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;background:#fff}
         input:focus,textarea:focus{outline:none;border-color:var(--ac)}
-        textarea{resize:vertical;min-height:70px}
-        .form-row{margin-bottom:12px}
-        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-        .file-hint{font-size:11px;color:var(--muted);margin-top:3px}
-        .err-text{font-size:11px;color:var(--danger);margin-top:3px;display:none}
-        .err-text.show{display:block}
-        input.invalid,textarea.invalid{border-color:var(--danger);background:rgba(231,76,60,0.03)}
+        textarea{resize:vertical;min-height:80px}
+        .form-row{margin-bottom:14px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+        .hint{font-size:11px;color:var(--muted);margin-top:3px}
+        .err{font-size:11px;color:var(--danger);margin-top:3px}
+        .field-err{border-color:var(--danger)!important;background:rgba(231,76,60,0.02)!important}
 
-        /* File upload */
-        .file-upload{display:flex;align-items:center;gap:10px}
-        .file-upload input[type="file"]{display:none}
-        .file-pick-btn{padding:8px 16px;border-radius:8px;border:1px dashed var(--border);background:#fafaf8;cursor:pointer;font-size:12px;color:var(--muted);transition:all .2s;flex-shrink:0}
-        .file-pick-btn:hover{border-color:var(--ac);color:var(--ac);background:rgba(0,184,122,0.03)}
-        .file-name{font-size:12px;color:var(--text);word-break:break-all;flex:1}
-        .file-name.ok{color:var(--ac)}
-        .file-size{font-size:11px;color:var(--muted)}
-        .file-remove{width:22px;height:22px;border-radius:50%;border:1px solid rgba(231,76,60,0.2);background:#fff;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:11px;flex-shrink:0}
+        /* FILE PICK — VISIBLE STYLED BUTTON */
+        .fpick{margin-top:4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .fpick-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:8px;border:2px dashed var(--border);background:#fafaf8;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .2s}
+        .fpick-btn:hover{border-color:var(--ac);color:var(--ac);background:rgba(0,184,122,0.04)}
+        .fpick-btn:active{transform:scale(0.97)}
+        .fpick input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+        .fpick-info{font-size:12px;color:var(--text);word-break:break-all}
+        .fpick-info.ok{color:var(--ac);font-weight:500}
+        .fpick-info .fsize{color:var(--muted);font-weight:400}
 
         .model-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-        .model-list-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
-        .model-list-item:hover{border-color:var(--ac);background:rgba(0,184,122,0.03)}
-        .model-list-item.active{border-color:var(--ac);background:rgba(0,184,122,0.06);box-shadow:0 0 0 1px var(--ac)}
-        .ml-emoji{font-size:22px;width:36px;height:36px;border-radius:8px;background:#f5f5f0;display:grid;place-items:center}
-        .ml-info{flex:1}.ml-name{font-size:13px;font-weight:600}.ml-id{font-size:11px;color:var(--muted)}
-        .ml-delete{width:26px;height:26px;border-radius:6px;border:1px solid rgba(231,76,60,0.2);background:none;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:12px;opacity:0;transition:opacity .2s}
-        .model-list-item:hover .ml-delete{opacity:1}
-        .dyn-item{padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;position:relative}
-        .dyn-remove{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;border:1px solid rgba(231,76,60,0.2);background:#fff;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:11px}
-        .gh-config{background:#f0faf5;border:1px solid rgba(0,184,122,0.2);border-radius:var(--r);padding:16px;margin-bottom:16px}
-        .gh-config h2{font-size:14px;font-weight:600;color:var(--ac);margin-bottom:12px}
-        .gh-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
-        .gh-status.ok{background:rgba(0,184,122,0.1);color:var(--ac)}
-        .gh-status.err{background:rgba(231,76,60,0.1);color:var(--danger)}
-        .submit-section{background:#fff;border:2px solid var(--ac);border-radius:var(--r);padding:20px;margin:20px 0;text-align:center}
-        .submit-section p{font-size:13px;color:var(--muted);margin-bottom:14px}
-        .submit-log{margin-top:12px;padding:10px;background:#f5f5f0;border-radius:8px;font-size:12px;color:var(--muted);text-align:left;max-height:200px;overflow:auto;display:none;font-family:monospace;line-height:1.6}
-        .val-errors{background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);border-radius:8px;padding:12px;margin-bottom:14px;display:none}
-        .val-errors.show{display:block}
-        .val-errors p{font-size:12px;color:var(--danger);margin-bottom:4px}
-        .val-errors p:last-child{margin-bottom:0}
-        .toast{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;z-index:999;transform:translateY(-20px);opacity:0;transition:all .3s;pointer-events:none}
+        .mli{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+        .mli:hover{border-color:var(--ac);background:rgba(0,184,122,0.03)}
+        .mli.active{border-color:var(--ac);background:rgba(0,184,122,0.06);box-shadow:inset 3px 0 0 var(--ac)}
+        .mli-e{font-size:22px;width:38px;height:38px;border-radius:8px;background:#f5f5f0;display:grid;place-items:center;flex-shrink:0}
+        .mli-i{flex:1}.mli-n{font-size:14px;font-weight:600}.mli-d{font-size:11px;color:var(--muted)}
+        .mli-x{width:26px;height:26px;border-radius:6px;border:1px solid rgba(231,76,60,0.2);background:none;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:12px;opacity:0;transition:opacity .2s;flex-shrink:0}
+        .mli:hover .mli-x{opacity:1}
+
+        .dyn{padding:14px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;position:relative}
+        .dyn-x{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:1px solid rgba(231,76,60,0.2);background:#fff;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:12px}
+
+        .gh-box{background:#f0faf5;border:1px solid rgba(0,184,122,0.2);border-radius:var(--r);padding:16px;margin-bottom:16px}
+        .gh-box h2{font-size:14px;font-weight:600;color:var(--ac);margin-bottom:12px}
+        .gh-st{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+        .gh-st.ok{background:rgba(0,184,122,0.1);color:var(--ac)}
+        .gh-st.no{background:rgba(231,76,60,0.1);color:var(--danger)}
+
+        .submit-box{background:#fff;border:2px solid var(--ac);border-radius:var(--r);padding:24px;margin:24px 0;text-align:center}
+        .submit-box p{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+        .slog{margin-top:14px;padding:12px;background:#f5f5f0;border-radius:8px;font-size:12px;color:var(--muted);text-align:left;max-height:200px;overflow:auto;display:none;font-family:monospace;line-height:1.7;white-space:pre-wrap}
+
+        .val-box{background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:none}
+        .val-box.show{display:block}
+        .val-box p{font-size:13px;color:var(--danger);margin-bottom:5px;padding-left:18px;position:relative}
+        .val-box p::before{content:"✗";position:absolute;left:0;font-weight:700}
+
+        .toast{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;z-index:999;transform:translateY(-20px);opacity:0;transition:all .3s;pointer-events:none;max-width:340px}
         .toast.show{transform:translateY(0);opacity:1}
+        .toast.terr{background:var(--danger)}
+
         .status-bar{position:fixed;bottom:0;left:0;right:0;padding:10px 20px;background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:50;font-size:12px;color:var(--muted)}
-        @media(max-width:600px){.form-grid,.form-grid-3{grid-template-columns:1fr}}
+        @media(max-width:600px){.form-grid,.form-grid-3{grid-template-columns:1fr}.btn-big{width:100%}}
     </style>
 </head>
 <body>
 <div class="top-bar">
-    <h1><span>AR</span> Admin Panel</h1>
+    <h1><i>AR</i> Admin Panel</h1>
     <div style="display:flex;gap:8px">
-        <button class="btn btn-sm" onclick="loadFromGitHub()">Pull from GitHub</button>
-        <button class="btn btn-sm btn-primary" onclick="validateAndSubmit()">Submit to GitHub</button>
+        <button class="btn btn-sm" onclick="pullGH()">Pull from GitHub</button>
     </div>
 </div>
 <div class="container">
 
-    <div class="gh-config">
+    <!-- GITHUB CONFIG -->
+    <div class="gh-box">
         <h2>GitHub Configuration</h2>
         <div class="form-grid">
             <div class="form-row"><label>GitHub Username</label><input type="text" id="gh_user" value="Hardik251925" oninput="saveGH()"></div>
-            <div class="form-row"><label>Repository Name (AR Viewer wala)</label><input type="text" id="gh_repo" value="QRWEbAPP" oninput="saveGH()"></div>
+            <div class="form-row"><label>AR Viewer Repository Name</label><input type="text" id="gh_repo" value="QRWEbAPP" oninput="saveGH()"></div>
         </div>
         <div class="form-row">
-            <label>Personal Access Token</label>
+            <label>Personal Access Token <span class="req">*</span></label>
             <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" oninput="saveGH()">
-            <div class="file-hint">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate → "repo" full check karo</div>
+            <div class="hint">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate → <b>"repo" full check</b> karo</div>
         </div>
-        <div class="form-row"><label>JSON File Path</label><input type="text" id="gh_path" value="assets/data/models.json" oninput="saveGH()"></div>
-        <span class="gh-status" id="ghStatus">Token required</span>
+        <div class="form-row"><label>JSON File Path in AR Repo</label><input type="text" id="gh_path" value="assets/data/models.json" oninput="saveGH()"></div>
+        <span class="gh-st no" id="ghSt">Token required</span>
     </div>
 
+    <!-- MODEL LIST -->
     <div class="card">
         <h2>Models <button class="btn btn-sm btn-primary" onclick="addModel()">+ Add Model</button></h2>
-        <div class="model-list" id="modelList"></div>
+        <div class="model-list" id="mList"></div>
     </div>
 
-    <div id="editorSection" style="display:none">
-        <div class="val-errors" id="valErrors"></div>
+    <!-- EDITOR -->
+    <div id="editor" style="display:none">
+        <div class="val-box" id="valBox"></div>
 
+        <!-- BASIC INFO -->
         <div class="card">
             <h2>Basic Information</h2>
             <div class="form-grid">
                 <div class="form-row">
-                    <label>Model ID * (lowercase, no numbers, no spaces — used in QR: ?heart)</label>
+                    <label>Model ID <span class="req">*</span> (lowercase letters only, e.g. heart)</label>
                     <input type="text" id="f_id" placeholder="heart" oninput="autoSave()">
-                    <div class="err-text" id="err_id"></div>
+                    <div class="err" id="e_id" style="display:none"></div>
                 </div>
                 <div class="form-row"><label>Display Name</label><input type="text" id="f_name" placeholder="Human Heart" oninput="autoSave()"></div>
             </div>
             <div class="form-grid-3">
-                <div class="form-row"><label>Category</label><input type="text" id="f_category" placeholder="Cardiology" oninput="autoSave()"></div>
-                <div class="form-row"><label>Emoji</label><input type="text" id="f_emoji" placeholder="❤️" oninput="autoSave()"></div>
-                <div class="form-row"><label>Camera Orbit</label><input type="text" id="f_cameraOrbit" placeholder="30deg 75deg 2.5m" oninput="autoSave()"></div>
+                <div class="form-row"><label>Category</label><input type="text" id="f_cat" placeholder="Cardiology" oninput="autoSave()"></div>
+                <div class="form-row"><label>Emoji</label><input type="text" id="f_emo" placeholder="❤️" oninput="autoSave()"></div>
+                <div class="form-row"><label>Camera Orbit</label><input type="text" id="f_cam" placeholder="30deg 75deg 2.5m" oninput="autoSave()"></div>
             </div>
-            <div class="form-row"><label>Description</label><textarea id="f_description" placeholder="Description..." oninput="autoSave()"></textarea></div>
+            <div class="form-row"><label>Description</label><textarea id="f_desc" placeholder="Detailed description..." oninput="autoSave()"></textarea></div>
             <div class="form-row"><label>Tags (comma separated)</label><input type="text" id="f_tags" placeholder="Anatomy, Cardiology" oninput="autoSave()"></div>
         </div>
 
+        <!-- 3D MODEL FILES -->
         <div class="card">
-            <h2>3D Model Files *</h2>
-            <div class="form-grid">
-                <div class="form-row">
-                    <label>GLB File (Android) *</label>
-                    <div class="file-upload">
-                        <label class="file-pick-btn" for="file_glb">Choose .glb file</label>
-                        <input type="file" id="file_glb" accept=".glb" onchange="handleFileSelect(this,'glb')">
-                        <span class="file-name" id="fname_glb">No file selected</span>
-                    </div>
-                    <div class="err-text" id="err_glb"></div>
-                    <div class="form-row" style="margin-top:6px"><label>Or enter path manually</label><input type="text" id="f_glb" placeholder="assets/models/heart.glb" oninput="autoSave()"></div>
+            <h2>3D Model Files <span class="req">*</span></h2>
+
+            <div class="form-row">
+                <label>GLB File — Android 3D Model <span class="req">*</span></label>
+                <div class="fpick">
+                    <label class="fpick-btn" id="glbPickBtn">📁 Pick .glb file from computer
+                        <input type="file" accept=".glb" onchange="pickFile(this,'glb')">
+                    </label>
+                    <div class="fpick-info" id="glbInfo">No file selected</div>
                 </div>
-                <div class="form-row">
-                    <label>USDZ File (iOS) *</label>
-                    <div class="file-upload">
-                        <label class="file-pick-btn" for="file_usdz">Choose .usdz file</label>
-                        <input type="file" id="file_usdz" accept=".usdz" onchange="handleFileSelect(this,'usdz')">
-                        <span class="file-name" id="fname_usdz">No file selected</span>
-                    </div>
-                    <div class="err-text" id="err_usdz"></div>
-                    <div class="form-row" style="margin-top:6px"><label>Or enter path manually</label><input type="text" id="f_usdz" placeholder="assets/models/heart.usdz" oninput="autoSave()"></div>
+                <div class="err" id="e_glb" style="display:none"></div>
+                <div class="form-row" style="margin-top:8px"><label>Or type path manually</label><input type="text" id="f_glb" placeholder="assets/models/heart.glb" oninput="autoSave()"></div>
+            </div>
+
+            <div class="form-row">
+                <label>USDZ File — iOS AR Model <span class="req">*</span></label>
+                <div class="fpick">
+                    <label class="fpick-btn" id="usdzPickBtn">📁 Pick .usdz file from computer
+                        <input type="file" accept=".usdz" onchange="pickFile(this,'usdz')">
+                    </label>
+                    <div class="fpick-info" id="usdzInfo">No file selected</div>
                 </div>
+                <div class="err" id="e_usdz" style="display:none"></div>
+                <div class="form-row" style="margin-top:8px"><label>Or type path manually</label><input type="text" id="f_usdz" placeholder="assets/models/heart.usdz" oninput="autoSave()"></div>
             </div>
         </div>
 
-        <div class="card"><h2>Hotspots <button class="btn btn-sm" onclick="addHotspot()">+ Add</button></h2><div id="hotspotList"></div></div>
-        <div class="card"><h2>Videos <button class="btn btn-sm" onclick="addVideo()">+ Add</button></h2><div id="videoList"></div></div>
+        <!-- HOTSPOTS -->
+        <div class="card"><h2>Hotspots <button class="btn btn-sm" onclick="addHS()">+ Add</button></h2><div id="hsList"></div></div>
 
+        <!-- VIDEOS -->
+        <div class="card"><h2>Videos <button class="btn btn-sm" onclick="addVid()">+ Add</button></h2><div id="vidList"></div></div>
+
+        <!-- IMAGES -->
         <div class="card">
-            <h2>Images * <button class="btn btn-sm" onclick="addImageEntry()">+ Add Image</button></h2>
-            <div id="imageList"></div>
-            <div class="err-text" id="err_images"></div>
+            <h2>Images <span class="req">*</span> (minimum 1) <button class="btn btn-sm" onclick="addImg()">+ Add Image</button></h2>
+            <div id="imgList"></div>
+            <div class="err" id="e_img" style="display:none"></div>
         </div>
 
-        <div class="card"><h2>Information Sections <button class="btn btn-sm" onclick="addInfoSection()">+ Add</button></h2><div id="infoList"></div></div>
+        <!-- INFO SECTIONS -->
+        <div class="card"><h2>Information Sections <button class="btn btn-sm" onclick="addInfo()">+ Add</button></h2><div id="infoList"></div></div>
     </div>
 
-    <div class="submit-section">
-        <p>Submit karoge toh models.json directly GitHub repo mein update ho jayega.</p>
-        <button class="btn btn-primary btn-submit" onclick="validateAndSubmit()" id="submitBtn">Submit to GitHub</button>
-        <div class="submit-log" id="submitLog"></div>
+    <!-- SUBMIT -->
+    <div class="submit-box">
+        <p>Submit = files + JSON directly GitHub repo mein upload hoga.<br>Existing models.json mein <b>merge</b> hoga — purana data safe rahega.</p>
+        <button class="btn btn-primary btn-big" onclick="doSubmit()" id="subBtn">Submit to GitHub</button>
+        <div class="slog" id="slog"></div>
     </div>
 </div>
 
-<div class="status-bar"><div id="statusText">Ready</div><button class="btn btn-sm btn-danger" onclick="clearAll()">Clear All</button></div>
+<div class="status-bar"><div id="stxt">Ready</div><button class="btn btn-sm btn-danger" onclick="clearAll()">Clear All</button></div>
 <div class="toast" id="toast"></div>
 
 <script>
-let models=[],activeModel=-1,fileSHA='',pendingFiles={};
+let M=[],AI=-1,SHA='',PF={};
 
-// ══════════════════════════════════════════════
-// GITHUB CONFIG
-// ══════════════════════════════════════════════
-function loadGH(){document.getElementById('gh_user').value=localStorage.getItem('gh_user')||'Hardik251925';document.getElementById('gh_repo').value=localStorage.getItem('gh_repo')||'QRWEbAPP';document.getElementById('gh_token').value=localStorage.getItem('gh_token')||'';document.getElementById('gh_path').value=localStorage.getItem('gh_path')||'assets/data/models.json';updateGHS()}
-function saveGH(){localStorage.setItem('gh_user',document.getElementById('gh_user').value.trim());localStorage.setItem('gh_repo',document.getElementById('gh_repo').value.trim());localStorage.setItem('gh_token',document.getElementById('gh_token').value.trim());localStorage.setItem('gh_path',document.getElementById('gh_path').value.trim());updateGHS()}
-function updateGHS(){const s=document.getElementById('ghStatus');const t=document.getElementById('gh_token').value.trim();s.className='gh-status '+(t?'ok':'err');s.textContent=t?'Token set — Ready':'Token missing — Submit disabled'}
-function ghHeaders(){const t=document.getElementById('gh_token').value.trim();const h={'Accept':'application/vnd.github.v3+json'};if(t)h['Authorization']='token '+t;return h}
-function ghBase(){return `https://api.github.com/repos/${document.getElementById('gh_user').value.trim()}/${document.getElementById('gh_repo').value.trim()}`}
+// ── GitHub Config ──
+function loadGH(){document.getElementById('gh_user').value=localStorage.getItem('gh_user')||'Hardik251925';document.getElementById('gh_repo').value=localStorage.getItem('gh_repo')||'QRWEbAPP';document.getElementById('gh_token').value=localStorage.getItem('gh_token')||'';document.getElementById('gh_path').value=localStorage.getItem('gh_path')||'assets/data/models.json';uGHS()}
+function saveGH(){['gh_user','gh_repo','gh_token','gh_path'].forEach(k=>localStorage.setItem(k,document.getElementById(k).value.trim()));uGHS()}
+function uGHS(){const s=document.getElementById('ghSt');const t=document.getElementById('gh_token').value.trim();s.className='gh-st '+(t?'ok':'no');s.textContent=t?'Token set — Ready to submit':'Token missing'}
+function ghH(){const h={'Accept':'application/vnd.github.v3+json'};const t=document.getElementById('gh_token').value.trim();if(t)h['Authorization']='token '+t;return h}
+function ghB(){return'https://api.github.com/repos/'+document.getElementById('gh_user').value.trim()+'/'+document.getElementById('gh_repo').value.trim()}
 
-// ══════════════════════════════════════════════
-// VALIDATION
-// ══════════════════════════════════════════════
-function validateModel(m, idx){
-    const errors=[];
-    // ID: required, lowercase letters only, no numbers, no spaces
-    if(!m.id) errors.push('Model '+(idx+1)+': ID is required');
-    else if(!/^[a-z]+$/.test(m.id)) errors.push('Model '+(idx+1)+': ID must be lowercase letters only (no numbers, no spaces). Example: heart, brain, lungs');
-    // GLB required
-    if(!m.glb && !pendingFiles[idx+'_glb']) errors.push('Model '+(idx+1)+': GLB file is required (Android 3D model)');
-    // USDZ required
-    if(!m.usdz && !pendingFiles[idx+'_usdz']) errors.push('Model '+(idx+1)+': USDZ file is required (iOS AR model)');
-    // At least 1 image
-    const hasImages=(m.images&&m.images.length>0&&m.images.some(img=>img.src))||(Object.keys(pendingFiles).some(k=>k.startsWith(idx+'_img_')));
-    if(!hasImages) errors.push('Model '+(idx+1)+': At least 1 image is required');
-    return errors;
+// ── File Pick ──
+function pickFile(inp,type){
+    const f=inp.files[0];if(!f)return;
+    const ext=f.name.split('.').pop().toLowerCase();
+    if(type==='glb'&&ext!=='glb'){TT('Only .glb files allowed!',1);inp.value='';return}
+    if(type==='usdz'&&ext!=='usdz'){TT('Only .usdz files allowed!',1);inp.value='';return}
+    PF[AI+'_'+type]={file:f,name:f.name,size:f.size};
+    document.getElementById(type+'Info').innerHTML='<span class="ok">'+f.name+'</span> <span class="fsize">('+fmtS(f.size)+')</span>';
+    document.getElementById('f_'+type).value='assets/models/'+f.name;
+    autoSave();TT(f.name+' selected');
 }
-
-function validateAll(){
-    let allErrors=[];
-    if(models.length===0){allErrors.push('Add at least 1 model');return allErrors}
-    models.forEach((m,i)=>{allErrors=allErrors.concat(validateModel(m,i))});
-    return allErrors;
+function pickImg(inp,i){
+    const f=inp.files[0];if(!f)return;
+    const ext=f.name.split('.').pop().toLowerCase();
+    if(!['jpg','jpeg','png','webp','gif'].includes(ext)){TT('Only image files allowed!',1);inp.value='';return}
+    PF[AI+'_img_'+i]={file:f,name:f.name,size:f.size};
+    const el=document.getElementById('imgI_'+i);
+    if(el)el.innerHTML='<span class="ok">'+f.name+'</span> <span class="fsize">('+fmtS(f.size)+')</span>';
+    const s=document.getElementById('im_s_'+i);if(s)s.value='assets/images/'+f.name;
+    svImg(i);TT(f.name+' selected');
 }
+function fmtS(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB'}
+function f2b64(f){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=()=>r(rd.result.split(',')[1]);rd.onerror=j;rd.readAsDataURL(f)})}
 
-function showValErrors(errors){
-    const el=document.getElementById('valErrors');
-    if(errors.length===0){el.classList.remove('show');return}
-    el.classList.add('show');
-    el.innerHTML=errors.map(e=>'<p>⚠ '+e+'</p>').join('');
-}
-
-// ID field live validation
-function validateIDField(){
-    const inp=document.getElementById('f_id');
-    const err=document.getElementById('err_id');
-    const val=inp.value.trim();
-    if(!val){inp.classList.add('invalid');err.textContent='ID is required';err.classList.add('show');return false}
-    if(!/^[a-z]+$/.test(val)){inp.classList.add('invalid');err.textContent='Only lowercase letters allowed (a-z). No numbers, no spaces.';err.classList.add('show');return false}
-    inp.classList.remove('invalid');err.classList.remove('show');return true;
-}
-
-// ══════════════════════════════════════════════
-// FILE SELECT (from computer)
-// ══════════════════════════════════════════════
-function handleFileSelect(input, type){
-    const file=input.files[0];
-    if(!file)return;
-    const ext=file.name.split('.').pop().toLowerCase();
-
-    // Validate extension
-    if(type==='glb'&&ext!=='glb'){toast('Only .glb files allowed!');input.value='';return}
-    if(type==='usdz'&&ext!=='usdz'){toast('Only .usdz files allowed!');input.value='';return}
-
-    const key=activeModel+'_'+type;
-    pendingFiles[key]={file:file,name:file.name,size:file.size};
-
-    const nameEl=document.getElementById('fname_'+type);
-    nameEl.textContent=file.name+' ('+formatSize(file.size)+')';
-    nameEl.className='file-name ok';
-
-    // Auto-set path
-    const pathInput=document.getElementById('f_'+type);
-    pathInput.value='assets/models/'+file.name;
-    autoSave();
-    toast(file.name+' selected');
-}
-
-function handleImageFileSelect(input, imgIdx){
-    const file=input.files[0];
-    if(!file)return;
-    const ext=file.name.split('.').pop().toLowerCase();
-    if(!['jpg','jpeg','png','webp','gif'].includes(ext)){toast('Only image files allowed (jpg, png, webp)!');input.value='';return}
-
-    const key=activeModel+'_img_'+imgIdx;
-    pendingFiles[key]={file:file,name:file.name,size:file.size};
-
-    const nameEl=document.getElementById('imfname_'+imgIdx);
-    if(nameEl){nameEl.textContent=file.name+' ('+formatSize(file.size)+')';nameEl.className='file-name ok'}
-
-    const srcInput=document.getElementById('im_s_'+imgIdx);
-    if(srcInput){srcInput.value='assets/images/'+file.name}
-    saveImage(imgIdx);
-    toast(file.name+' selected');
-}
-
-function formatSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB'}
-
-// ══════════════════════════════════════════════
-// GITHUB API
-// ══════════════════════════════════════════════
-async function uploadFileToGitHub(filePath, fileContent){
-    let sha='';
-    try{
-        const r=await fetch(ghBase()+'/contents/'+filePath,{headers:ghHeaders()});
-        if(r.ok){const d=await r.json();sha=d.sha}
-    }catch(e){}
-    const body={message:'Upload '+filePath,content:fileContent,branch:'main'};
-    if(sha)body.sha=sha;
-    const r=await fetch(ghBase()+'/contents/'+filePath,{method:'PUT',headers:{...ghHeaders(),'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!r.ok){const e=await r.json();throw new Error(e.message||'HTTP '+r.status)}
-    return await r.json();
-}
-
-function fileToBase64(file){
-    return new Promise((resolve,reject)=>{
-        const reader=new FileReader();
-        reader.onload=()=>resolve(reader.result.split(',')[1]);
-        reader.onerror=reject;
-        reader.readAsDataURL(file);
+// ── Validation ──
+function validate(){
+    const errs=[];
+    if(M.length===0){errs.push('Add at least 1 model first');return errs}
+    M.forEach((m,i)=>{
+        const n='Model '+(i+1)+' ('+( m.name||'untitled')+')';
+        if(!m.id)errs.push(n+': ID is required');
+        else if(!/^[a-z]+$/.test(m.id))errs.push(n+': ID must be lowercase letters only (a-z), no numbers/spaces');
+        if(!m.glb&&!PF[i+'_glb'])errs.push(n+': GLB file is required');
+        if(!m.usdz&&!PF[i+'_usdz'])errs.push(n+': USDZ file is required');
+        const hasImg=(m.images&&m.images.some(x=>x.src))||Object.keys(PF).some(k=>k.startsWith(i+'_img_'));
+        if(!hasImg)errs.push(n+': At least 1 image is required');
     });
+    return errs;
 }
+function showVE(errs){const el=document.getElementById('valBox');if(!errs.length){el.classList.remove('show');return}el.classList.add('show');el.innerHTML=errs.map(e=>'<p>'+e+'</p>').join('')}
 
-async function loadFromGitHub(){
+// ── GitHub Pull ──
+async function pullGH(){
     const path=document.getElementById('gh_path').value.trim();
-    logMsg('Pulling from GitHub...');
+    slog('Pulling '+path+' from GitHub...');
     try{
-        const r=await fetch(ghBase()+'/contents/'+path,{headers:ghHeaders()});
+        const r=await fetch(ghB()+'/contents/'+path,{headers:ghH()});
         if(!r.ok)throw new Error('HTTP '+r.status);
-        const data=await r.json();
-        fileSHA=data.sha;
-        const content=atob(data.content.replace(/\n/g,''));
-        const json=JSON.parse(content);
-        models=json.models||json||[];
-        activeModel=models.length>0?0:-1;
-        renderModelList();
-        if(activeModel>=0)loadEditor();
-        logMsg('Loaded '+models.length+' model(s). SHA: '+fileSHA.substring(0,7));
-        toast('Pulled '+models.length+' model(s)');
-    }catch(e){logMsg('ERROR: '+e.message);toast('Pull failed: '+e.message)}
+        const d=await r.json();SHA=d.sha;
+        const json=JSON.parse(atob(d.content.replace(/\n/g,'')));
+        M=json.models||json||[];AI=M.length>0?0:-1;
+        renderML();if(AI>=0)loadEd();
+        slog('Loaded '+M.length+' model(s)');TT('Pulled '+M.length+' model(s)');
+    }catch(e){slog('ERROR: '+e.message);TT('Pull failed: '+e.message,1)}
 }
 
-async function validateAndSubmit(){
-    const errors=validateAll();
-    showValErrors(errors);
-    if(errors.length>0){toast('Fix '+errors.length+' error(s) first!');return}
-    await submitToGitHub();
-}
+// ── GitHub Submit (with MERGE) ──
+async function doSubmit(){
+    // Validate first
+    const errs=validate();
+    showVE(errs);
+    if(errs.length){TT(errs.length+' error(s) — fix before submit!',1);return}
 
-async function submitToGitHub(){
     const token=document.getElementById('gh_token').value.trim();
-    if(!token){toast('GitHub Token required!');return}
-    const btn=document.getElementById('submitBtn');
+    if(!token){TT('GitHub Token required!',1);return}
+
+    const btn=document.getElementById('subBtn');
     btn.textContent='Submitting...';btn.disabled=true;
 
     try{
-        // Step 1: Upload pending files (models + images)
-        const fileKeys=Object.keys(pendingFiles);
-        if(fileKeys.length>0){
-            logMsg('Uploading '+fileKeys.length+' file(s)...');
-            for(const key of fileKeys){
-                const pf=pendingFiles[key];
-                const b64=await fileToBase64(pf.file);
-                const path=key.includes('img_')?'assets/images/'+pf.name:'assets/models/'+pf.name;
-                logMsg('Uploading: '+path+' ('+formatSize(pf.size)+')');
-                await uploadFileToGitHub(path,b64);
-                logMsg('Uploaded: '+path);
+        // Step 1: Upload pending files
+        const fkeys=Object.keys(PF);
+        if(fkeys.length>0){
+            slog('Uploading '+fkeys.length+' file(s)...');
+            for(const k of fkeys){
+                const pf=PF[k];
+                const path=k.includes('img_')?'assets/images/'+pf.name:'assets/models/'+pf.name;
+                slog('  Uploading: '+path+' ('+fmtS(pf.size)+')');
+                await ghPut(path,await f2b64(pf.file));
+                slog('  Done: '+path);
             }
-            pendingFiles={};
+            PF={};
         }
 
-        // Step 2: Upload models.json
-        const path=document.getElementById('gh_path').value.trim();
-        logMsg('Updating '+path+'...');
-        try{const r=await fetch(ghBase()+'/contents/'+path,{headers:ghHeaders()});if(r.ok){const d=await r.json();fileSHA=d.sha}}catch(e){fileSHA=''}
+        // Step 2: MERGE with existing models.json (not override)
+        const jsonPath=document.getElementById('gh_path').value.trim();
+        slog('Fetching existing '+jsonPath+' for merge...');
 
-        const jsonContent=JSON.stringify({models:models},null,4);
-        const b64=btoa(unescape(encodeURIComponent(jsonContent)));
-        const body={message:'Update models.json from Admin Panel',content:b64,branch:'main'};
-        if(fileSHA)body.sha=fileSHA;
+        let existingModels=[];
+        let existingSHA='';
+        try{
+            const r=await fetch(ghB()+'/contents/'+jsonPath,{headers:ghH()});
+            if(r.ok){
+                const d=await r.json();
+                existingSHA=d.sha;
+                const json=JSON.parse(atob(d.content.replace(/\n/g,'')));
+                existingModels=json.models||json||[];
+                slog('Existing file has '+existingModels.length+' model(s). SHA: '+existingSHA.substring(0,7));
+            }
+        }catch(e){slog('No existing file found, creating new.')}
 
-        const r=await fetch(ghBase()+'/contents/'+path,{method:'PUT',headers:{...ghHeaders(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+        // Merge: update existing by id, add new ones
+        const merged=[...existingModels];
+        M.forEach(newM=>{
+            const idx=merged.findIndex(old=>old.id===newM.id);
+            if(idx>=0){
+                merged[idx]=newM;  // Update existing
+                slog('  Updated: '+newM.id);
+            }else{
+                merged.push(newM);  // Add new
+                slog('  Added new: '+newM.id);
+            }
+        });
+
+        slog('Final: '+merged.length+' model(s) in JSON');
+
+        // Step 3: Upload merged JSON
+        const content=btoa(unescape(encodeURIComponent(JSON.stringify({models:merged},null,4))));
+        const body={message:'Update models.json from Admin Panel',content:content,branch:'main'};
+        if(existingSHA)body.sha=existingSHA;
+
+        const r=await fetch(ghB()+'/contents/'+jsonPath,{method:'PUT',headers:{...ghH(),'Content-Type':'application/json'},body:JSON.stringify(body)});
         if(!r.ok){const e=await r.json();throw new Error(e.message||'HTTP '+r.status)}
-        const result=await r.json();
-        fileSHA=result.content.sha;
-        logMsg('SUCCESS! All files uploaded to GitHub.');
-        logMsg('GitHub Pages update in 1-2 min.');
-        toast('Submitted successfully!');
-    }catch(e){logMsg('ERROR: '+e.message);toast('Submit failed: '+e.message)}
+
+        const res=await r.json();SHA=res.content.sha;
+        slog('SUCCESS! GitHub updated.');
+        slog('Pages update in 1-2 min.');
+        TT('Submitted successfully!');
+
+    }catch(e){slog('ERROR: '+e.message);TT('Failed: '+e.message,1)}
     btn.textContent='Submit to GitHub';btn.disabled=false;
 }
 
-function logMsg(m){const l=document.getElementById('submitLog');l.style.display='block';l.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';l.scrollTop=l.scrollHeight}
+async function ghPut(path,b64){
+    let sha='';
+    try{const r=await fetch(ghB()+'/contents/'+path,{headers:ghH()});if(r.ok){const d=await r.json();sha=d.sha}}catch(e){}
+    const body={message:'Upload '+path,content:b64,branch:'main'};
+    if(sha)body.sha=sha;
+    const r=await fetch(ghB()+'/contents/'+path,{method:'PUT',headers:{...ghH(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){const e=await r.json();throw new Error(e.message||'Upload failed')}
+}
 
-// ══════════════════════════════════════════════
-// MODEL CRUD
-// ══════════════════════════════════════════════
-function addModel(){models.push({id:'',name:'New Model',category:'',emoji:'🔬',glb:'',usdz:'',cameraOrbit:'30deg 75deg 2.5m',description:'',tags:[],hotspots:[],videos:[],infoSections:[],images:[]});activeModel=models.length-1;renderModelList();loadEditor();toast('Model added')}
-function selectModel(i){activeModel=i;renderModelList();loadEditor()}
-function deleteModel(i,e){e.stopPropagation();if(!confirm('Delete "'+models[i].name+'"?'))return;models.splice(i,1);if(activeModel>=models.length)activeModel=models.length-1;renderModelList();if(activeModel>=0)loadEditor();else document.getElementById('editorSection').style.display='none';toast('Deleted')}
-function renderModelList(){document.getElementById('modelList').innerHTML=models.length===0?'<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No models. Click "+ Add Model".</div>':models.map((m,i)=>`<div class="model-list-item ${i===activeModel?'active':''}" onclick="selectModel(${i})"><div class="ml-emoji">${m.emoji||'🔬'}</div><div class="ml-info"><div class="ml-name">${m.name||'Untitled'}</div><div class="ml-id">ID: ${m.id||'(empty)'}${m.glb?' | GLB ✓':''}${m.usdz?' | USDZ ✓':''} | ${(m.images||[]).length} img</div></div><button class="ml-delete" onclick="deleteModel(${i},event)">✕</button></div>`).join('');document.getElementById('statusText').textContent=models.length+' model(s)'}
+function slog(m){const l=document.getElementById('slog');l.style.display='block';l.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';l.scrollTop=l.scrollHeight}
 
-// ══════════════════════════════════════════════
-// EDITOR
-// ══════════════════════════════════════════════
-function loadEditor(){if(activeModel<0)return;document.getElementById('editorSection').style.display='block';const m=models[activeModel];document.getElementById('f_id').value=m.id||'';document.getElementById('f_name').value=m.name||'';document.getElementById('f_category').value=m.category||'';document.getElementById('f_emoji').value=m.emoji||'';document.getElementById('f_cameraOrbit').value=m.cameraOrbit||'';document.getElementById('f_description').value=m.description||'';document.getElementById('f_tags').value=(m.tags||[]).join(', ');document.getElementById('f_glb').value=m.glb||'';document.getElementById('f_usdz').value=m.usdz||'';
-    // Reset file displays
-    const gf=pendingFiles[activeModel+'_glb'];document.getElementById('fname_glb').textContent=gf?gf.name+' ('+formatSize(gf.size)+')':'No file selected';document.getElementById('fname_glb').className=gf?'file-name ok':'file-name';
-    const uf=pendingFiles[activeModel+'_usdz'];document.getElementById('fname_usdz').textContent=uf?uf.name+' ('+formatSize(uf.size)+')':'No file selected';document.getElementById('fname_usdz').className=uf?'file-name ok':'file-name';
-    document.getElementById('file_glb').value='';document.getElementById('file_usdz').value='';
-    renderHotspots();renderVideos();renderImages();renderInfoSections();showValErrors([])}
+// ── Model CRUD ──
+function addModel(){M.push({id:'',name:'',category:'',emoji:'🔬',glb:'',usdz:'',cameraOrbit:'30deg 75deg 2.5m',description:'',tags:[],hotspots:[],videos:[],infoSections:[],images:[]});AI=M.length-1;renderML();loadEd();TT('Model added — fill required fields')}
+function selM(i){AI=i;renderML();loadEd()}
+function delM(i,e){e.stopPropagation();if(!confirm('Delete "'+(M[i].name||'untitled')+'"?'))return;M.splice(i,1);if(AI>=M.length)AI=M.length-1;renderML();if(AI>=0)loadEd();else document.getElementById('editor').style.display='none';TT('Deleted')}
+function renderML(){document.getElementById('mList').innerHTML=M.length===0?'<div style="text-align:center;padding:24px;color:var(--muted);font-size:14px">No models added yet.<br>Click "+ Add Model" to start.</div>':M.map((m,i)=>{
+    const ok_id=/^[a-z]+$/.test(m.id);const ok_glb=!!(m.glb||PF[i+'_glb']);const ok_usdz=!!(m.usdz||PF[i+'_usdz']);
+    const ok_img=(m.images&&m.images.some(x=>x.src))||Object.keys(PF).some(k=>k.startsWith(i+'_img_'));
+    return`<div class="mli ${i===AI?'active':''}" onclick="selM(${i})"><div class="mli-e">${m.emoji||'🔬'}</div><div class="mli-i"><div class="mli-n">${m.name||'(no name)'}</div><div class="mli-d">ID: ${m.id||'(empty)'} | GLB:${ok_glb?'✓':'✗'} USDZ:${ok_usdz?'✓':'✗'} IMG:${ok_img?'✓':'✗'}</div></div><button class="mli-x" onclick="delM(${i},event)">✕</button></div>`}).join('');
+    document.getElementById('stxt').textContent=M.length+' model(s)'}
 
-function autoSave(){if(activeModel<0)return;const m=models[activeModel];m.id=document.getElementById('f_id').value.trim().toLowerCase().replace(/[^a-z]/g,'');document.getElementById('f_id').value=m.id;m.name=document.getElementById('f_name').value.trim();m.category=document.getElementById('f_category').value.trim();m.emoji=document.getElementById('f_emoji').value.trim();m.cameraOrbit=document.getElementById('f_cameraOrbit').value.trim();m.description=document.getElementById('f_description').value.trim();m.tags=document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(t=>t);m.glb=document.getElementById('f_glb').value.trim();m.usdz=document.getElementById('f_usdz').value.trim();validateIDField();renderModelList()}
+// ── Editor ──
+function loadEd(){if(AI<0)return;document.getElementById('editor').style.display='block';const m=M[AI];
+    document.getElementById('f_id').value=m.id||'';document.getElementById('f_name').value=m.name||'';
+    document.getElementById('f_cat').value=m.category||'';document.getElementById('f_emo').value=m.emoji||'';
+    document.getElementById('f_cam').value=m.cameraOrbit||'';document.getElementById('f_desc').value=m.description||'';
+    document.getElementById('f_tags').value=(m.tags||[]).join(', ');
+    document.getElementById('f_glb').value=m.glb||'';document.getElementById('f_usdz').value=m.usdz||'';
+    // File pick status
+    const gf=PF[AI+'_glb'];document.getElementById('glbInfo').innerHTML=gf?'<span class="ok">'+gf.name+'</span> <span class="fsize">('+fmtS(gf.size)+')</span>':'No file selected';
+    const uf=PF[AI+'_usdz'];document.getElementById('usdzInfo').innerHTML=uf?'<span class="ok">'+uf.name+'</span> <span class="fsize">('+fmtS(uf.size)+')</span>':'No file selected';
+    renderHS();renderVid();renderImg();renderInf();showVE([])}
 
-// ══════════════════════════════════════════════
-// DYNAMIC LISTS
-// ══════════════════════════════════════════════
-function addHotspot(){if(activeModel<0)return;models[activeModel].hotspots.push({position:'0 0 0',normal:'0 1 0',label:'',info:''});renderHotspots()}
-function removeHotspot(i){models[activeModel].hotspots.splice(i,1);renderHotspots()}
-function saveHotspot(i){const h=models[activeModel].hotspots[i];h.label=document.getElementById('hs_l_'+i).value.trim();h.info=document.getElementById('hs_i_'+i).value.trim();h.position=document.getElementById('hs_p_'+i).value.trim();h.normal=document.getElementById('hs_n_'+i).value.trim()}
-function renderHotspots(){if(activeModel<0)return;const l=models[activeModel].hotspots||[];document.getElementById('hotspotList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No hotspots.</div>':l.map((h,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeHotspot(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Label</label><input type="text" id="hs_l_${i}" value="${h.label||''}" oninput="saveHotspot(${i})"></div><div class="form-row"><label>Position</label><input type="text" id="hs_p_${i}" value="${h.position||''}" oninput="saveHotspot(${i})"></div></div><div class="form-grid"><div class="form-row"><label>Normal</label><input type="text" id="hs_n_${i}" value="${h.normal||''}" oninput="saveHotspot(${i})"></div><div class="form-row"><label>Info</label><input type="text" id="hs_i_${i}" value="${h.info||''}" oninput="saveHotspot(${i})"></div></div></div>`).join('')}
+function autoSave(){if(AI<0)return;const m=M[AI];
+    let id=document.getElementById('f_id').value.toLowerCase().replace(/[^a-z]/g,'');
+    document.getElementById('f_id').value=id;m.id=id;
+    m.name=document.getElementById('f_name').value.trim();m.category=document.getElementById('f_cat').value.trim();
+    m.emoji=document.getElementById('f_emo').value.trim();m.cameraOrbit=document.getElementById('f_cam').value.trim();
+    m.description=document.getElementById('f_desc').value.trim();
+    m.tags=document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(t=>t);
+    m.glb=document.getElementById('f_glb').value.trim();m.usdz=document.getElementById('f_usdz').value.trim();
+    // Live ID validation
+    const eId=document.getElementById('e_id');const fId=document.getElementById('f_id');
+    if(!id){eId.textContent='ID is required';eId.style.display='block';fId.classList.add('field-err')}
+    else if(!/^[a-z]+$/.test(id)){eId.textContent='Only lowercase letters (a-z)';eId.style.display='block';fId.classList.add('field-err')}
+    else{eId.style.display='none';fId.classList.remove('field-err')}
+    renderML()}
 
-function addVideo(){if(activeModel<0)return;models[activeModel].videos.push({title:'',duration:'',emoji:'🎬',url:''});renderVideos()}
-function removeVideo(i){models[activeModel].videos.splice(i,1);renderVideos()}
-function saveVideo(i){const v=models[activeModel].videos[i];v.title=document.getElementById('vd_t_'+i).value.trim();v.duration=document.getElementById('vd_d_'+i).value.trim();v.emoji=document.getElementById('vd_e_'+i).value.trim();v.url=document.getElementById('vd_u_'+i).value.trim()}
-function renderVideos(){if(activeModel<0)return;const l=models[activeModel].videos||[];document.getElementById('videoList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No videos.</div>':l.map((v,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeVideo(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Title</label><input type="text" id="vd_t_${i}" value="${v.title||''}" oninput="saveVideo(${i})"></div><div class="form-row"><label>URL</label><input type="url" id="vd_u_${i}" value="${v.url||''}" oninput="saveVideo(${i})"></div></div><div class="form-grid"><div class="form-row"><label>Duration</label><input type="text" id="vd_d_${i}" value="${v.duration||''}" oninput="saveVideo(${i})"></div><div class="form-row"><label>Emoji</label><input type="text" id="vd_e_${i}" value="${v.emoji||''}" oninput="saveVideo(${i})"></div></div></div>`).join('')}
+// ── Hotspots ──
+function addHS(){if(AI<0)return;M[AI].hotspots.push({position:'0 0 0',normal:'0 1 0',label:'',info:''});renderHS()}
+function rmHS(i){M[AI].hotspots.splice(i,1);renderHS()}
+function svHS(i){const h=M[AI].hotspots[i];h.label=document.getElementById('hl_'+i).value.trim();h.info=document.getElementById('hi_'+i).value.trim();h.position=document.getElementById('hp_'+i).value.trim();h.normal=document.getElementById('hn_'+i).value.trim()}
+function renderHS(){if(AI<0)return;const l=M[AI].hotspots||[];document.getElementById('hsList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:13px;padding:8px 0">No hotspots added.</div>':l.map((h,i)=>`<div class="dyn"><button class="dyn-x" onclick="rmHS(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Label</label><input type="text" id="hl_${i}" value="${h.label||''}" oninput="svHS(${i})"></div><div class="form-row"><label>Position (x y z)</label><input type="text" id="hp_${i}" value="${h.position||''}" oninput="svHS(${i})"></div></div><div class="form-grid"><div class="form-row"><label>Normal</label><input type="text" id="hn_${i}" value="${h.normal||''}" oninput="svHS(${i})"></div><div class="form-row"><label>Info Text</label><input type="text" id="hi_${i}" value="${h.info||''}" oninput="svHS(${i})"></div></div></div>`).join('')}
 
-function addImageEntry(){if(activeModel<0)return;models[activeModel].images.push({src:'',label:''});renderImages()}
-function removeImageEntry(i){models[activeModel].images.splice(i,1);delete pendingFiles[activeModel+'_img_'+i];renderImages()}
-function saveImage(i){if(activeModel<0||!models[activeModel].images[i])return;const img=models[activeModel].images[i];const s=document.getElementById('im_s_'+i);const l=document.getElementById('im_l_'+i);if(s)img.src=s.value.trim();if(l)img.label=l.value.trim()}
-function renderImages(){if(activeModel<0)return;const l=models[activeModel].images||[];document.getElementById('imageList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No images. At least 1 required.</div>':l.map((img,i)=>{
-    const pf=pendingFiles[activeModel+'_img_'+i];
-    return`<div class="dyn-item"><button class="dyn-remove" onclick="removeImageEntry(${i})">✕</button>
-    <div class="form-row"><label>Pick Image from Computer</label><div class="file-upload"><label class="file-pick-btn" for="imgfile_${i}">Choose Image</label><input type="file" id="imgfile_${i}" accept=".jpg,.jpeg,.png,.webp,.gif" onchange="handleImageFileSelect(this,${i})"><span class="file-name ${pf?'ok':''}" id="imfname_${i}">${pf?pf.name+' ('+formatSize(pf.size)+')':'No file selected'}</span></div></div>
-    <div class="form-grid"><div class="form-row"><label>Or enter path</label><input type="text" id="im_s_${i}" value="${img.src||''}" oninput="saveImage(${i})" placeholder="assets/images/heart.jpg"></div><div class="form-row"><label>Label</label><input type="text" id="im_l_${i}" value="${img.label||''}" oninput="saveImage(${i})"></div></div></div>`}).join('')}
+// ── Videos ──
+function addVid(){if(AI<0)return;M[AI].videos.push({title:'',duration:'',emoji:'🎬',url:''});renderVid()}
+function rmVid(i){M[AI].videos.splice(i,1);renderVid()}
+function svVid(i){const v=M[AI].videos[i];v.title=document.getElementById('vt_'+i).value.trim();v.duration=document.getElementById('vd_'+i).value.trim();v.emoji=document.getElementById('ve_'+i).value.trim();v.url=document.getElementById('vu_'+i).value.trim()}
+function renderVid(){if(AI<0)return;const l=M[AI].videos||[];document.getElementById('vidList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:13px;padding:8px 0">No videos added.</div>':l.map((v,i)=>`<div class="dyn"><button class="dyn-x" onclick="rmVid(${i})">✕</button><div class="form-grid"><div class="form-row"><label>Title</label><input type="text" id="vt_${i}" value="${v.title||''}" oninput="svVid(${i})"></div><div class="form-row"><label>URL</label><input type="url" id="vu_${i}" value="${v.url||''}" oninput="svVid(${i})"></div></div><div class="form-grid"><div class="form-row"><label>Duration</label><input type="text" id="vd_${i}" value="${v.duration||''}" oninput="svVid(${i})"></div><div class="form-row"><label>Emoji</label><input type="text" id="ve_${i}" value="${v.emoji||''}" oninput="svVid(${i})"></div></div></div>`).join('')}
 
-function addInfoSection(){if(activeModel<0)return;models[activeModel].infoSections.push({title:'',text:''});renderInfoSections()}
-function removeInfoSection(i){models[activeModel].infoSections.splice(i,1);renderInfoSections()}
-function saveInfoSection(i){const s=models[activeModel].infoSections[i];s.title=document.getElementById('in_t_'+i).value.trim();s.text=document.getElementById('in_x_'+i).value.trim()}
-function renderInfoSections(){if(activeModel<0)return;const l=models[activeModel].infoSections||[];document.getElementById('infoList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:12px">No sections.</div>':l.map((s,i)=>`<div class="dyn-item"><button class="dyn-remove" onclick="removeInfoSection(${i})">✕</button><div class="form-row"><label>Title</label><input type="text" id="in_t_${i}" value="${s.title||''}" oninput="saveInfoSection(${i})"></div><div class="form-row"><label>Text</label><textarea id="in_x_${i}" oninput="saveInfoSection(${i})">${s.text||''}</textarea></div></div>`).join('')}
+// ── Images ──
+function addImg(){if(AI<0)return;M[AI].images.push({src:'',label:''});renderImg()}
+function rmImg(i){M[AI].images.splice(i,1);delete PF[AI+'_img_'+i];renderImg()}
+function svImg(i){if(AI<0||!M[AI].images[i])return;const img=M[AI].images[i];const s=document.getElementById('im_s_'+i);const l=document.getElementById('im_l_'+i);if(s)img.src=s.value.trim();if(l)img.label=l.value.trim()}
+function renderImg(){if(AI<0)return;const l=M[AI].images||[];document.getElementById('imgList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:13px;padding:8px 0">No images. At least 1 required.</div>':l.map((img,i)=>{
+    const pf=PF[AI+'_img_'+i];
+    return`<div class="dyn"><button class="dyn-x" onclick="rmImg(${i})">✕</button>
+    <div class="form-row"><label>Pick Image from Computer</label><div class="fpick"><label class="fpick-btn">📁 Choose Image<input type="file" accept=".jpg,.jpeg,.png,.webp,.gif" onchange="pickImg(this,${i})"></label><div class="fpick-info ${pf?'ok':''}" id="imgI_${i}">${pf?'<span class="ok">'+pf.name+'</span> <span class="fsize">('+fmtS(pf.size)+')</span>':'No file selected'}</div></div></div>
+    <div class="form-grid"><div class="form-row"><label>Or type path</label><input type="text" id="im_s_${i}" value="${img.src||''}" oninput="svImg(${i})" placeholder="assets/images/heart.jpg"></div><div class="form-row"><label>Label</label><input type="text" id="im_l_${i}" value="${img.label||''}" oninput="svImg(${i})"></div></div></div>`}).join('')}
 
-function clearAll(){if(!confirm('Delete all?'))return;models=[];activeModel=-1;pendingFiles={};renderModelList();document.getElementById('editorSection').style.display='none';toast('Cleared')}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+// ── Info Sections ──
+function addInfo(){if(AI<0)return;M[AI].infoSections.push({title:'',text:''});renderInf()}
+function rmInf(i){M[AI].infoSections.splice(i,1);renderInf()}
+function svInf(i){const s=M[AI].infoSections[i];s.title=document.getElementById('it_'+i).value.trim();s.text=document.getElementById('ix_'+i).value.trim()}
+function renderInf(){if(AI<0)return;const l=M[AI].infoSections||[];document.getElementById('infoList').innerHTML=l.length===0?'<div style="color:var(--muted);font-size:13px;padding:8px 0">No sections added.</div>':l.map((s,i)=>`<div class="dyn"><button class="dyn-x" onclick="rmInf(${i})">✕</button><div class="form-row"><label>Title</label><input type="text" id="it_${i}" value="${s.title||''}" oninput="svInf(${i})"></div><div class="form-row"><label>Text</label><textarea id="ix_${i}" oninput="svInf(${i})">${s.text||''}</textarea></div></div>`).join('')}
 
-loadGH();renderModelList();
+function clearAll(){if(!confirm('Delete all models?'))return;M=[];AI=-1;PF={};renderML();document.getElementById('editor').style.display='none';TT('Cleared')}
+function TT(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' terr':'');setTimeout(()=>t.classList.remove('show'),3000)}
+
+loadGH();renderML();
 </script>
 </body>
 </html>
