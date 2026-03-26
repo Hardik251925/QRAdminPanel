@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Model Admin Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg:#f8f8f6;--card:#fff;--border:#e5e5e0;--text:#1a1a1a;--muted:#888;--ac:#00b87a;--ac2:#6c5ce7;--danger:#e74c3c;--r:12px}
@@ -229,8 +229,8 @@ slog('SUCCESS! '+merged.length+' model(s) saved.');TT('Submitted successfully!')
 
 function slog(m){const l=document.getElementById('slog');l.style.display='block';l.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';l.scrollTop=l.scrollHeight}
 
-function genQR(id){const url=QR_BASE+id;document.getElementById('f_qrurl').value=url;const sec=document.getElementById('qrSection');sec.style.display='block';const c=document.getElementById('qrCanvas');c.innerHTML='';QRCode.toCanvas(document.createElement('canvas'),url,{width:200,margin:2},function(e,cvs){if(!e)c.appendChild(cvs)})}
-function shareQR(type){const id=M[AI]?M[AI].id:'';const url=QR_BASE+id;const text='Check out this AR Model: '+url;if(type==='whatsapp')window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');else if(type==='twitter')window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');else if(type==='facebook')window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank');else if(type==='copy'){navigator.clipboard.writeText(url).then(()=>TT('Link copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);TT('Link copied!')})}else if(type==='download'){const cvs=document.querySelector('#qrCanvas canvas');if(cvs){const a=document.createElement('a');a.download='qr-'+id+'.png';a.href=cvs.toDataURL();a.click();TT('QR downloaded')}}}
+function genQR(id){const url=QR_BASE+id;document.getElementById('f_qrurl').value=url;const sec=document.getElementById('qrSection');sec.style.display='block';const c=document.getElementById('qrCanvas');c.innerHTML='';try{new QRCode(c,{text:url,width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})}catch(e){slog('QR Error: '+e.message);c.innerHTML='<p style="color:var(--danger);font-size:12px">QR generation failed: '+e.message+'</p>'}}
+function shareQR(type){const id=M[AI]?M[AI].id:'';const url=QR_BASE+id;const text='Check out this AR Model: '+url;if(type==='whatsapp')window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');else if(type==='twitter')window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');else if(type==='facebook')window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url),'_blank');else if(type==='copy'){navigator.clipboard.writeText(url).then(()=>TT('Link copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);TT('Link copied!')})}else if(type==='download'){const cvs=document.querySelector('#qrCanvas canvas')||document.querySelector('#qrCanvas img');if(cvs){const a=document.createElement('a');a.download='qr-'+id+'.png';if(cvs.tagName==='CANVAS')a.href=cvs.toDataURL();else a.href=cvs.src;a.click();TT('QR downloaded')}}}
 
 function addModel(){M.push({id:'',name:'',category:'',emoji:'🔬',glb:'',usdz:'',cameraOrbit:'30deg 75deg 2.5m',description:'',tags:[],videos:[],audio:[],infoSections:[],images:[]});AI=M.length-1;renderML();loadEd();TT('Model added — fill required fields')}
 function selM(i){AI=i;renderML();loadEd()}
