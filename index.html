@@ -219,12 +219,30 @@ async function pullGH(){slog('Pulling from GitHub...');try{const r=await fetch(g
 async function ghPut(path,b64){let sha='';try{const r=await fetch(ghB()+'/contents/'+path,{headers:ghH()});if(r.ok)sha=(await r.json()).sha}catch(e){}const body={message:'Upload '+path,content:b64,branch:'main'};if(sha)body.sha=sha;const r=await fetch(ghB()+'/contents/'+path,{method:'PUT',headers:{...ghH(),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json();throw new Error(e.message||'Upload failed')}}
 
 async function doSubmit(){const errs=validate();showVE(errs);if(errs.length){TT(errs.length+' error(s) — fix before submit!',1);return}const token=document.getElementById('gh_token').value.trim();if(!token){TT('GitHub Token required!',1);return}const btn=document.getElementById('subBtn');btn.textContent='Submitting...';btn.disabled=true;
-try{const fkeys=Object.keys(PF);if(fkeys.length>0){slog('Uploading '+fkeys.length+' file(s)...');for(const k of fkeys){const pf=PF[k];let path;if(k.includes('_img_'))path='assets/images/'+pf.name;else if(k.includes('_vid_'))path='assets/videos/'+pf.name;else if(k.includes('_aud_'))path='assets/audio/'+pf.name;else path='assets/models/'+pf.name;slog('  Uploading: '+path+' ('+fmtS(pf.size)+')');await ghPut(path,await f2b64(pf.file));slog('  Done: '+path)}PF={}}
+try{const fkeys=Object.keys(PF);
+// Force-set all pending file paths into model data BEFORE upload
+fkeys.forEach(k=>{const pf=PF[k];const parts=k.split('_');const mi=parseInt(parts[0]);if(isNaN(mi)||!M[mi])return;const m=M[mi];
+if(k.endsWith('_glb'))m.glb='assets/models/'+pf.name;
+else if(k.endsWith('_usdz'))m.usdz='assets/models/'+pf.name;
+else if(k.includes('_vid_')){const vi=parseInt(parts[2]);if(m.videos&&m.videos[vi])m.videos[vi].url='assets/videos/'+pf.name}
+else if(k.includes('_aud_')){const ai=parseInt(parts[2]);if(m.audio&&m.audio[ai])m.audio[ai].url='assets/audio/'+pf.name}
+else if(k.includes('_img_')){const ii=parseInt(parts[2]);if(m.images&&m.images[ii])m.images[ii].src='assets/images/'+pf.name}
+});
+if(fkeys.length>0){slog('Uploading '+fkeys.length+' file(s)...');for(const k of fkeys){const pf=PF[k];let path;if(k.includes('_img_'))path='assets/images/'+pf.name;else if(k.includes('_vid_'))path='assets/videos/'+pf.name;else if(k.includes('_aud_'))path='assets/audio/'+pf.name;else path='assets/models/'+pf.name;slog('  Uploading: '+path+' ('+fmtS(pf.size)+')');await ghPut(path,await f2b64(pf.file));slog('  Done: '+path)}PF={}}
 const jsonPath=document.getElementById('gh_path').value.trim();let existing=[],eSHA='';try{const r=await fetch(ghB()+'/contents/'+jsonPath,{headers:ghH()});if(r.ok){const d=await r.json();eSHA=d.sha;existing=(JSON.parse(atob(d.content.replace(/\n/g,'')))).models||[];slog('Existing: '+existing.length+' model(s)')}}catch(e){}
 const merged=[...existing];M.forEach(nm=>{const idx=merged.findIndex(o=>o.id===nm.id);if(idx>=0){merged[idx]=nm;slog('  Updated: '+nm.id)}else{merged.push(nm);slog('  Added: '+nm.id)}});
 const content=btoa(unescape(encodeURIComponent(JSON.stringify({models:merged},null,4))));const body={message:'Update models.json',content,branch:'main'};if(eSHA)body.sha=eSHA;
 const r=await fetch(ghB()+'/contents/'+jsonPath,{method:'PUT',headers:{...ghH(),'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json();throw new Error(e.message)}
-slog('SUCCESS! '+merged.length+' model(s) saved.');TT('Submitted successfully!');if(AI>=0&&M[AI].id)genQR(M[AI].id);
+slog('SUCCESS! '+merged.length+' model(s) saved.');TT('Submitted successfully!');
+// Generate QR
+const submittedId=(AI>=0&&M[AI].id)?M[AI].id:'';
+if(submittedId)genQR(submittedId);
+// Reset everything except QR
+M=[];AI=-1;PF={};
+renderML();
+document.getElementById('editor').style.display='none';
+slog('Form cleared. Ready for next model.');
+
 }catch(e){slog('ERROR: '+e.message);TT('Failed: '+e.message,1)}btn.textContent='Submit to GitHub';btn.disabled=false}
 
 function slog(m){const l=document.getElementById('slog');l.style.display='block';l.textContent+='['+new Date().toLocaleTimeString()+'] '+m+'\n';l.scrollTop=l.scrollHeight}
